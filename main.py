@@ -3,6 +3,7 @@ import random
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, User
+from pytz import timezone
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -10,17 +11,21 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
+def timenow():
+    time = datetime.now()
+    time_log = time.strftime("%d-%m-%Y %H:%M:%S\n")
+    return time_log
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
     """Send a message when the command /start is issued."""
-    print("/start")
+    print(timenow() + "/start")
     update.message.reply_text('Hi! Try /help to find out more!')
 
 def help(update, context):
     """Send a message when the command /help is issued."""
-    print("help")
+    print(timenow() + "/help")
     update.message.reply_text('Help menu:\n/start to start talking to the bot \
     \n/help to get the help menu\
     \n/time to get current time\
@@ -31,21 +36,21 @@ def help(update, context):
 
 def echo(update, context):
     """Echo the user message."""
-    print(update.message.text)
+    print(timenow() + " " + update.message.reply_text)
     update.message.reply_text(update.message.text)
 
 def gettime(update, context):
     """Show the time."""
-    time = datetime.now()
-    gettime = time.strftime("%X")
-    print(gettime)
+    time = datetime.now(timezone("Hongkong"))
+    gettime = time.strftime("%I:%M %p")
+    print(timenow() + gettime)
     update.message.reply_text(gettime)
 
 def date(update, context):
     """Show the time."""
-    time = datetime.now()
+    time = datetime.now(timezone("Hongkong"))
     date = time.strftime("%x")
-    print(date)
+    print(timenow() + date)
     update.message.reply_text(date)
 
 
@@ -54,7 +59,7 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 def about(update, context):
-    print("/about")
+    print(timenow() + "/about")
     update.message.reply_text("About Me:",
             reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Youtube', url="https://www.youtube.com/c/番茄tomatofrankie")],
             [InlineKeyboardButton("Second Channel", url="https://www.youtube.com/channel/UCrlPId80vwGt70tDmaHdDeA")],
@@ -83,10 +88,10 @@ otherlist = ["墨西哥菜", "土耳其菜", "印尼菜"]
 
 
 def rand(update, context):
-    print("/random")
+    print(timenow() + "/random")
     cuisine = ["港式", "台灣菜", "中菜", "西式", "日式", "韓式", "印度、清真", 
     "泰國菜", "越南菜", "星馬菜", "cafe", "快餐", "咖喱", "酒吧", "素食", "其他"]
-    choose(update, cuisine)
+    choose(update, cuisine, konglist, chilist, westlist, japanlist, korealist, otherlist)
 
 def choose(update, cuisine, konglist, chilist, westlist, japanlist, korealist, otherlist):
     choice = random.choice(cuisine)
@@ -105,7 +110,7 @@ def choose(update, cuisine, konglist, chilist, westlist, japanlist, korealist, o
         print(secondchoice)
 
 def meal(update, context):
-    print("/meal")
+    print(timenow() + "/meal")
     update.message.reply_text("Cuisine list: 港式, 台灣菜, 中菜, 西式, \
     日式, 韓式, 印度、清真, 泰國菜, 越南菜, 星馬菜, cafe, 快餐, 咖喱, 酒吧, 素食, 其他\
     \n/random to randomly draw a cuisine without any restrictions\
@@ -125,13 +130,19 @@ def remove_saved_1(update, context):
     westlist.remove("Steak")
     japanlist.remove("Omakase")
     korealist.remove("韓燒") 
-    print("/remove_saved_1")
+    print(timenow() + "/remove_saved_1")
     choose(update, cuisine, konglist, chilist, westlist, japanlist, korealist, otherlist)
     cuisine.extend(["酒吧","其他"])
     chilist.extend(["餃子","粥","上海菜","潮州打冷","刀削麵"])
     westlist.extend(["法國菜","Oyster","德國菜","Steak"])
     japanlist.extend(["Omakase"])
     korealist.extend(["韓燒"]) 
+
+def love(update, context):
+    chat_id=update.effective_chat.id
+    print(timenow() + "/love")
+    context.bot.send_document(chat_id,document=open('resources/love.doc', 'rb'), filename="love.docx")
+
 
 def main():
     """Start the bot."""
@@ -144,7 +155,7 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    print("start!")
+    print(timenow() + "start!")
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("time", gettime))
@@ -153,6 +164,7 @@ def main():
     dp.add_handler(CommandHandler("meal", meal))
     dp.add_handler(CommandHandler("random", rand))
     dp.add_handler(CommandHandler("remove_saved_1", remove_saved_1))
+    dp.add_handler(CommandHandler("love", love))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))

@@ -1,9 +1,6 @@
-import random
-cuisine = ["港式","台灣菜","中菜", "a", "b"]
-remove = ["a", "b"]
+from datetime import datetime
 
-def remove():
-    cuisine.remove("a","b")
+time = datetime.now()
+time_log = time.strftime("%d-%m-%Y %H:%M:%S")
 
-remove()
-print(cuisine)
+print(time_log)
