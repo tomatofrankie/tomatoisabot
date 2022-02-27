@@ -1,15 +1,20 @@
 import logging
 import random
 from datetime import datetime
+import sched
+from threading import Thread
+import time
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, User
 from pytz import timezone
+from alive import keep_alive
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+keep_alive()
 
 def timenow():
     time = datetime.now()
@@ -36,8 +41,10 @@ def help(update, context):
 
 def echo(update, context):
     """Echo the user message."""
-    print(timenow() + " " + update.message.reply_text)
-    update.message.reply_text(update.message.text)
+    echo = update.message.reply_text(update.message.text)
+    print(timenow() + str(echo['chat']) +
+    "\n" + str(echo['text']))
+    
 
 def gettime(update, context):
     """Show the time."""
@@ -68,18 +75,18 @@ def about(update, context):
             ]))
 
 
-cuisine = ["港式", "台灣菜", "中菜", "西式", "日式", "韓式", "印度、清真", 
+cuisine = ["港式", "台灣菜", "中菜", "西式", "日式", "韓式", "印度、清真",
 "泰國菜", "越南菜", "星馬菜", "cafe", "快餐", "咖喱", "酒吧", "素食", "其他"]
 
 konglist = ["車仔麵", "茶記/冰室"]
 
-chilist = ["米線", "火鍋", "雞煲", "酒樓、中菜館、點心", "餃子", "粥", 
+chilist = ["米線", "火鍋", "雞煲", "酒樓、中菜館、點心", "餃子", "粥",
  "燒味", "四川菜", "北京菜", "上海菜", "潮州打冷", "刀削麵"]
 
-westlist = ["義大利菜", "法國菜", "西班牙菜", "俄羅斯菜", "Burger", 
+westlist = ["義大利菜", "法國菜", "西班牙菜", "俄羅斯菜", "Burger",
  "Oyster", "Steak", "Pasta", "Pizza", "德國菜"]
 
-japanlist = ["居酒屋", "壽司", "拉麵", "烏冬", "鐵板燒", "定食", 
+japanlist = ["居酒屋", "壽司", "拉麵", "烏冬", "鐵板燒", "定食",
  "Omakase", "燒肉"]
 
 korealist = ["韓燒", "炸雞", "韓式料理"]
@@ -89,7 +96,7 @@ otherlist = ["墨西哥菜", "土耳其菜", "印尼菜"]
 
 def rand(update, context):
     print(timenow() + "/random")
-    cuisine = ["港式", "台灣菜", "中菜", "西式", "日式", "韓式", "印度、清真", 
+    cuisine = ["港式", "台灣菜", "中菜", "西式", "日式", "韓式", "印度、清真",
     "泰國菜", "越南菜", "星馬菜", "cafe", "快餐", "咖喱", "酒吧", "素食", "其他"]
     choose(update, cuisine, konglist, chilist, westlist, japanlist, korealist, otherlist)
 
@@ -115,7 +122,7 @@ def meal(update, context):
     日式, 韓式, 印度、清真, 泰國菜, 越南菜, 星馬菜, cafe, 快餐, 咖喱, 酒吧, 素食, 其他\
     \n/random to randomly draw a cuisine without any restrictions\
     \n/remove_saved_1 to remove saved choices")
-    
+
 def remove_saved_1(update, context):
     cuisine.remove("酒吧")
     cuisine.remove("其他")
@@ -129,20 +136,33 @@ def remove_saved_1(update, context):
     westlist.remove("德國菜")
     westlist.remove("Steak")
     japanlist.remove("Omakase")
-    korealist.remove("韓燒") 
+    korealist.remove("韓燒")
     print(timenow() + "/remove_saved_1")
     choose(update, cuisine, konglist, chilist, westlist, japanlist, korealist, otherlist)
     cuisine.extend(["酒吧","其他"])
     chilist.extend(["餃子","粥","上海菜","潮州打冷","刀削麵"])
     westlist.extend(["法國菜","Oyster","德國菜","Steak"])
     japanlist.extend(["Omakase"])
-    korealist.extend(["韓燒"]) 
+    korealist.extend(["韓燒"])
 
-def love(update, context):
+def loveyou(update, context):
     chat_id=update.effective_chat.id
-    print(timenow() + "/love")
-    context.bot.send_document(chat_id,document=open('resources/love.doc', 'rb'), filename="love.docx")
+    print(timenow() + "/loveyou0119")
+    context.bot.send_document(chat_id,document=open('resources/foryou.zip', 'rb'), filename="foryou.zip")
+    #context.bot.send_document(chat_id,document=open('resources/pic.png', 'rb'), filename="pic.png")
+    #context.bot.send_document(chat_id,document=open('resources/readme.rtf', 'rb'), filename="readme.rtf")
 
+s = sched.scheduler(time.time, time.sleep)
+def bg():
+    timenow = datetime.now(timezone("Hongkong"))
+    min = timenow.strftime("%M") 
+    if min == "00" or min =="30":
+        print(timenow)
+    s.enter(1, 1, bg, ())
+
+def run_thread():
+    s.enter(1, 1, bg, ())
+    s.run()
 
 def main():
     """Start the bot."""
@@ -154,6 +174,9 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
+    thread = Thread(target=run_thread)
+    thread.start()
+
     # on different commands - answer in Telegram
     print(timenow() + "start!")
     dp.add_handler(CommandHandler("start", start))
@@ -164,7 +187,7 @@ def main():
     dp.add_handler(CommandHandler("meal", meal))
     dp.add_handler(CommandHandler("random", rand))
     dp.add_handler(CommandHandler("remove_saved_1", remove_saved_1))
-    dp.add_handler(CommandHandler("love", love))
+    dp.add_handler(CommandHandler("loveyou0119", loveyou))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
