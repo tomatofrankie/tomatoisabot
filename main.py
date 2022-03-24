@@ -157,7 +157,8 @@ def bg():
     timenow = datetime.now(timezone("Hongkong"))
     min = timenow.strftime("%M") 
     if min == "00" or min =="30":
-        print(timenow)
+        print("\n" + str(timenow) + "\n")
+        time.sleep(60)
     s.enter(1, 1, bg, ())
 
 def run_thread():
