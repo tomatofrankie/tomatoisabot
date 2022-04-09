@@ -5,9 +5,10 @@ import sched
 from threading import Thread
 import time
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton, User
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from pytz import timezone
 from alive import keep_alive
+import yfinance as yf
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -36,14 +37,15 @@ def help(update, context):
     \n/time to get current time\
     \n/date to get today\'s date\
     \n/aboutme to know more about me\
-    \n/meal to choose a restaurant')
+    \n/meal to choose a restaurant\
+    \n/hi to say hi to the bot')
 
 
-def echo(update, context):
-    """Echo the user message."""
-    echo = update.message.reply_text(update.message.text)
-    print(timenow() + str(echo['chat']) +
-    "\n" + str(echo['text']))
+# def echo(update, context):
+#     """Echo the user message."""
+#     echo = update.message.reply_text(update.message.text)
+#     print(timenow() + str(echo['chat']) +
+#     "\n" + str(echo['text']))
     
 
 def gettime(update, context):
@@ -152,18 +154,147 @@ def loveyou(update, context):
     #context.bot.send_document(chat_id,document=open('resources/pic.png', 'rb'), filename="pic.png")
     #context.bot.send_document(chat_id,document=open('resources/readme.rtf', 'rb'), filename="readme.rtf")
 
-s = sched.scheduler(time.time, time.sleep)
+s1 = sched.scheduler(time.time, time.sleep)
+# s2 = sched.scheduler(time.time, time.sleep)
+
 def bg():
     timenow = datetime.now(timezone("Hongkong"))
     min = timenow.strftime("%M") 
     if min == "00" or min =="30":
         print("\n" + str(timenow) + "\n")
         time.sleep(60)
-    s.enter(1, 1, bg, ())
+    s1.enter(1, 1, bg, ())
 
-def run_thread():
-    s.enter(1, 1, bg, ())
-    s.run()
+def run_thread1():
+    s1.enter(1, 1, bg, ())
+    s1.run()
+
+def usstock(update, context):
+    print(timenow() + "/usstock")
+    update.message.reply_text('Enter the ticker:\nEg. T') 
+    dp.add_handler(MessageHandler(Filters.text, check_price))
+    
+def check_price(update,context):  
+    update.message.reply_text('Wait a second...') 
+    ticker = update.message.text
+    ticker = ticker.upper()
+    print(ticker)
+    try: 
+        stock = yf.Ticker(ticker)
+        stock_info = yf.Ticker(ticker).info
+    except:
+        print('No such ticker.')
+        update.message.reply_text('No such ticker.')
+    try:
+        ex_div_date = stock_info['exDividendDate']
+        ex_div_date = datetime.fromtimestamp(ex_div_date)
+    except:
+        pass
+    market_price = stock_info['regularMarketPrice']
+    previous_close_price = stock_info['regularMarketPreviousClose']
+    dividend = stock.dividends[-6:-1]
+    day_Low = stock_info['dayLow']
+    day_High = stock_info['dayHigh']
+    pre_market_price = stock_info['preMarketPrice']
+    news_list=stock.news
+
+    print('market price: ', market_price)
+    print('previous close price: ', previous_close_price)
+    print('dividend rate: \n',dividend)
+    print('ex-dividend date: ',ex_div_date)
+    print('day low: ',day_Low)
+    print('day high: ', day_High)
+    print('pre-market price: ', pre_market_price)
+    try:
+        for news in range(3):
+            news=news_list[news]
+            title=news['title']
+            link=news['link']
+            print(title)
+            print(link)
+    except:
+        pass
+    
+    update.message.reply_text(ticker + '\nmarket price: ' + str(market_price) +
+    '\nprevious close price: ' + str(previous_close_price) + 
+    '\ndividend rate:\n'+str(dividend)+
+    '\nex-dividend date: ' + str(ex_div_date) +
+    '\nday low: ' + str(day_Low) + 
+    '\nday high: ' + str(day_High) + 
+    '\npre-market price: '+ str(pre_market_price))
+    for news in range(3):
+        try:
+            news=news_list[news]
+            title=news['title']
+            link=news['link']
+            update.message.reply_text(title + '\n' + link)
+        except:
+            pass
+    return
+
+
+# def usstock(update, context):
+#     chat_id=update.effective_chat.id
+#     print(timenow() + "/usstock")
+#     update.message.reply_text('Input the command.\nEg. GME<180') 
+#     dp.add_handler(MessageHandler(Filters.text, get_cmd))
+#     #dp.add_handler(CommandHandler("end", end))
+    
+# def get_cmd(update, context):    
+#     command = update.message.text
+#     ticker = ''
+#     price = ''
+#     for char in command:
+#         if char.isalpha():
+#             ticker += char.upper()
+#         if char.isdigit():
+#             price += char
+#     if '<' in command:
+#         compare = '<'
+#     if '>' in command:
+#         compare = '>'
+#     price = float(price)
+#     Thread(target=run_thread2, args=(ticker,update,compare,price,)).start()
+
+# def check_price(ticker,update,compare,price):
+#     stock_info = yf.Ticker(ticker).info
+#     market_price = stock_info['regularMarketPrice']
+#     previous_close_price = stock_info['regularMarketPreviousClose']
+
+#     update.message.reply_text(ticker + '\nmarket price: ' + str(market_price) + '\n' +
+#     'previous close price: ' + str(previous_close_price))
+#     print('market price: ', market_price)
+#     print('previous close price: ', previous_close_price)
+    
+#     for i in range(1000):
+#         stock_info = yf.Ticker(ticker).info
+#         market_price = stock_info['regularMarketPrice']
+#         previous_close_price = stock_info['regularMarketPreviousClose'] 
+#         print(i)
+
+#         if compare == '<':
+#             if market_price < price:
+#                 update.message.reply_text('alert!')
+#                 print('alert!')
+#                 return
+#         if compare == '>':
+#             if market_price > price:
+#                 update.message.reply_text('alert!')
+#                 print('alert!')
+#                 return
+        
+
+# def run_thread2(ticker,update,compare,price):
+#     s2.enter(5, 0, check_price, (ticker,update,compare,price))
+#     s2.run()
+
+def spam(update,context):
+    print(timenow() + "/hi")
+    random_number = int(100*random.random())
+    print('"hi" x '+ str(random_number))
+    for i in range(random_number):
+        update.message.reply_text('hi')
+    update.message.reply_text(str(random_number) + ' "hi"s had been sent')
 
 def main():
     """Start the bot."""
@@ -173,11 +304,12 @@ def main():
     updater = Updater("5267877519:AAFOXQdhT-moRnscpniJU608gywutyfjl_4", use_context=True)
 
     # Get the dispatcher to register handlers
+    global dp
     dp = updater.dispatcher
 
-    thread = Thread(target=run_thread)
-    thread.start()
-
+    thread1 = Thread(target=run_thread1)
+    thread1.start()
+    
     # on different commands - answer in Telegram
     print(timenow() + "start!")
     dp.add_handler(CommandHandler("start", start))
@@ -189,9 +321,8 @@ def main():
     dp.add_handler(CommandHandler("random", rand))
     dp.add_handler(CommandHandler("remove_saved_1", remove_saved_1))
     dp.add_handler(CommandHandler("loveyou0119", loveyou))
-
-    # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    dp.add_handler(CommandHandler("usstock",usstock))
+    dp.add_handler(CommandHandler('hi',spam))
 
     # log all errors
     dp.add_error_handler(error)

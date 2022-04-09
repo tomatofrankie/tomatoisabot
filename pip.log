@@ -1,0 +1,32 @@
+Using pip 22.0.4 from /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/pip (python 3.9)
+Non-user install because site-packages writeable
+Created temporary directory: /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-ephem-wheel-cache-bjeg0o3z
+Created temporary directory: /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-req-tracker-m0qluanx
+Initialized build tracking at /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-req-tracker-m0qluanx
+Created build tracker: /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-req-tracker-m0qluanx
+Entered build tracker: /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-req-tracker-m0qluanx
+Created temporary directory: /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-install-3agwdokg
+Requirement already satisfied: pystan in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (3.4.0)
+Requirement already satisfied: clikit<0.7,>=0.6 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from pystan) (0.6.2)
+Requirement already satisfied: setuptools in /Users/frankie/Library/Python/3.9/lib/python/site-packages (from pystan) (58.0.4)
+Requirement already satisfied: httpstan<4.8,>=4.7 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from pystan) (4.7.1)
+Requirement already satisfied: aiohttp<4.0,>=3.6 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from pystan) (3.7.4.post0)
+Requirement already satisfied: pysimdjson<4.0,>=3.2 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from pystan) (3.2.0)
+Requirement already satisfied: numpy<2.0,>=1.19 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from pystan) (1.22.3)
+Requirement already satisfied: async-timeout<4.0,>=3.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from aiohttp<4.0,>=3.6->pystan) (3.0.1)
+Requirement already satisfied: yarl<2.0,>=1.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from aiohttp<4.0,>=3.6->pystan) (1.6.3)
+Requirement already satisfied: chardet<5.0,>=2.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from aiohttp<4.0,>=3.6->pystan) (3.0.4)
+Requirement already satisfied: typing-extensions>=3.6.5 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from aiohttp<4.0,>=3.6->pystan) (3.10.0.0)
+Requirement already satisfied: attrs>=17.3.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from aiohttp<4.0,>=3.6->pystan) (21.2.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from aiohttp<4.0,>=3.6->pystan) (5.1.0)
+Requirement already satisfied: pylev<2.0,>=1.3 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from clikit<0.7,>=0.6->pystan) (1.4.0)
+Requirement already satisfied: crashtest<0.4.0,>=0.3.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from clikit<0.7,>=0.6->pystan) (0.3.1)
+Requirement already satisfied: pastel<0.3.0,>=0.2.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from clikit<0.7,>=0.6->pystan) (0.2.1)
+Requirement already satisfied: webargs<9.0,>=8.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from httpstan<4.8,>=4.7->pystan) (8.1.0)
+Requirement already satisfied: appdirs<2.0,>=1.4 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from httpstan<4.8,>=4.7->pystan) (1.4.4)
+Requirement already satisfied: marshmallow<4.0,>=3.10 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from httpstan<4.8,>=4.7->pystan) (3.15.0)
+Requirement already satisfied: packaging in /Users/frankie/Library/Python/3.9/lib/python/site-packages (from marshmallow<4.0,>=3.10->httpstan<4.8,>=4.7->pystan) (21.0)
+Requirement already satisfied: idna>=2.0 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from yarl<2.0,>=1.0->aiohttp<4.0,>=3.6->pystan) (2.10)
+Requirement already satisfied: pyparsing>=2.0.2 in /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages (from packaging->marshmallow<4.0,>=3.10->httpstan<4.8,>=4.7->pystan) (2.4.7)
+Created temporary directory: /private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-unpack-tkac32v2
+Removed build tracker: '/private/var/folders/ym/67x0srsx2ln9vy4qtlvtdv500000gn/T/pip-req-tracker-m0qluanx'
