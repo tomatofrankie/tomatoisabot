@@ -9,6 +9,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from pytz import timezone
 from alive import keep_alive
 import yfinance as yf
+import requests
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -38,7 +39,8 @@ def help(update, context):
     \n/date to get today\'s date\
     \n/aboutme to know more about me\
     \n/meal to choose a restaurant\
-    \n/hi to say hi to the bot')
+    \n/hi to say hi to the bot\
+    \n/usstock to check the stats of a stock')
 
 
 # def echo(update, context):
@@ -155,7 +157,7 @@ def loveyou(update, context):
     #context.bot.send_document(chat_id,document=open('resources/readme.rtf', 'rb'), filename="readme.rtf")
 
 s1 = sched.scheduler(time.time, time.sleep)
-# s2 = sched.scheduler(time.time, time.sleep)
+s2 = sched.scheduler(time.time, time.sleep)
 
 def bg():
     timenow = datetime.now(timezone("Hongkong"))
@@ -169,9 +171,17 @@ def run_thread1():
     s1.enter(1, 1, bg, ())
     s1.run()
 
+def request():
+    requests.get('https://tomatoisabot2.tomatofrankie1.repl.co')
+    s2.enter(60, 2, request, ())
+
+def run_thread2():
+    s2.enter(1, 1, request, ())
+    s2.run()
+
 def usstock(update, context):
     print(timenow() + "/usstock")
-    update.message.reply_text('Enter the ticker:\nEg. T') 
+    update.message.reply_text('Enter the ticker:\nEg. GME') 
     dp.add_handler(MessageHandler(Filters.text, check_price))
     
 def check_price(update,context):  
@@ -182,55 +192,60 @@ def check_price(update,context):
     try: 
         stock = yf.Ticker(ticker)
         stock_info = yf.Ticker(ticker).info
+        market_price = stock_info['regularMarketPrice']
+        previous_close_price = stock_info['regularMarketPreviousClose']
+        print(market_price,previous_close_price)
     except:
         print('No such ticker.')
         update.message.reply_text('No such ticker.')
-    try:
-        ex_div_date = stock_info['exDividendDate']
-        ex_div_date = datetime.fromtimestamp(ex_div_date)
-    except:
-        pass
-    market_price = stock_info['regularMarketPrice']
-    previous_close_price = stock_info['regularMarketPreviousClose']
-    dividend = stock.dividends[-6:-1]
-    day_Low = stock_info['dayLow']
-    day_High = stock_info['dayHigh']
-    pre_market_price = stock_info['preMarketPrice']
-    news_list=stock.news
-
-    print('market price: ', market_price)
-    print('previous close price: ', previous_close_price)
-    print('dividend rate: \n',dividend)
-    print('ex-dividend date: ',ex_div_date)
-    print('day low: ',day_Low)
-    print('day high: ', day_High)
-    print('pre-market price: ', pre_market_price)
-    try:
-        for news in range(3):
-            news=news_list[news]
-            title=news['title']
-            link=news['link']
-            print(title)
-            print(link)
-    except:
-        pass
-    
-    update.message.reply_text(ticker + '\nmarket price: ' + str(market_price) +
-    '\nprevious close price: ' + str(previous_close_price) + 
-    '\ndividend rate:\n'+str(dividend)+
-    '\nex-dividend date: ' + str(ex_div_date) +
-    '\nday low: ' + str(day_Low) + 
-    '\nday high: ' + str(day_High) + 
-    '\npre-market price: '+ str(pre_market_price))
-    for news in range(3):
+    else:
         try:
-            news=news_list[news]
-            title=news['title']
-            link=news['link']
-            update.message.reply_text(title + '\n' + link)
+          ex_div_date = stock_info['exDividendDate']
+          ex_div_date = datetime.fromtimestamp(ex_div_date)
         except:
-            pass
+          pass
+        
+        
+        dividend = stock.dividends[-6:-1]
+        day_Low = stock_info['dayLow']
+        day_High = stock_info['dayHigh']
+        pre_market_price = stock_info['preMarketPrice']
+        news_list=stock.news
+
+        print('market price: ', market_price)
+        print('previous close price: ', previous_close_price)
+        print('dividend rate: \n',dividend)
+        print('ex-dividend date: ',ex_div_date)
+        print('day low: ',day_Low)
+        print('day high: ', day_High)
+        print('pre-market price: ', pre_market_price)
+        try:
+            for news in range(3):
+                news=news_list[news]
+                title=news['title']
+                link=news['link']
+                print(title)
+                print(link)
+        except:
+            print('No relevant news')
+        
+        update.message.reply_text(ticker + '\nmarket price: ' + str(market_price) +
+        '\nprevious close price: ' + str(previous_close_price) + 
+        '\ndividend rate:\n'+str(dividend)+
+        '\nex-dividend date: ' + str(ex_div_date) +
+        '\nday low: ' + str(day_Low) + 
+        '\nday high: ' + str(day_High) + 
+        '\npre-market price: '+ str(pre_market_price))
+        try:
+            for news in range(3):
+                news=news_list[news]
+                title=news['title']
+                link=news['link']
+                update.message.reply_text(title + '\n' + link)
+        except:
+            update.message.reply_text('No relevant news')
     return
+
 
 
 # def usstock(update, context):
@@ -309,6 +324,8 @@ def main():
 
     thread1 = Thread(target=run_thread1)
     thread1.start()
+    thread2 = Thread(target=run_thread2)
+    thread2.start()
     
     # on different commands - answer in Telegram
     print(timenow() + "start!")
